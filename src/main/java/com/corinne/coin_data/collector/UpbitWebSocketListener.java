@@ -3,7 +3,7 @@ package com.corinne.coin_data.collector;
 import com.corinne.coin_data.websocket.controller.RedisPublisher;
 import com.corinne.coin_data.websocket.dto.PricePublishingDto;
 import com.corinne.coin_data.websocket.dto.TradePrice;
-import com.corinne.coin_data.websocket.repository.ChatRoomRepository;
+import com.corinne.coin_data.websocket.repository.RedisRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +31,7 @@ public class UpbitWebSocketListener extends WebSocketListener {
     @Autowired
     private RedisPublisher redisPublisher;
     @Autowired
-    private ChatRoomRepository chatRoomRepository;
+    private RedisRepository redisRepository;
 
     @Override
     public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
@@ -67,10 +67,10 @@ public class UpbitWebSocketListener extends WebSocketListener {
             e.printStackTrace();
         }
         if(tradePrice.getStream_type().equals("SNAPSHOT")){
-            chatRoomRepository.enterTopic(tradePrice.getCode());
+            redisRepository.enterTopic(tradePrice.getCode());
         }else {
-            redisPublisher.publish(chatRoomRepository.getTopic(tradePrice.getCode()), new PricePublishingDto(tradePrice));
-
+            redisPublisher.publish(redisRepository.getTopic(tradePrice.getCode()), new PricePublishingDto(tradePrice));
+            redisRepository.savePrice(new PricePublishingDto(tradePrice));
         }
     }
 

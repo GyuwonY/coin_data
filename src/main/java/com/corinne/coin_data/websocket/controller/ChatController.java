@@ -1,7 +1,7 @@
 package com.corinne.coin_data.websocket.controller;
 
 import com.corinne.coin_data.websocket.model.ChatMessage;
-import com.corinne.coin_data.websocket.repository.ChatRoomRepository;
+import com.corinne.coin_data.websocket.repository.RedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ChatController {
     private final RedisPublisher redisPublisher;
-    private final ChatRoomRepository chatRoomRepository;
+    private final RedisRepository redisRepository;
 
     /**
      * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
@@ -25,6 +25,6 @@ public class ChatController {
         }
 
         // Websocket에 발행된 메시지를 redis로 발행한다(publish)
-        redisPublisher.publish(chatRoomRepository.getTopic(message.getTopicName()), message);
+        redisPublisher.publish(redisRepository.getTopic(message.getTopicName()), message);
     }
 }
