@@ -48,6 +48,7 @@ public class UpbitWebSocketListener extends WebSocketListener {
     @Override
     public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, @Nullable Response response) {
         System.out.println("Socket Error : " + t.getMessage());
+        t.printStackTrace();
     }
 
     @Override
@@ -61,6 +62,7 @@ public class UpbitWebSocketListener extends WebSocketListener {
     @Override
     public void onMessage(@NotNull WebSocket webSocket, @NotNull ByteString bytes) {
 //        JsonNode jsonNode = JsonUtil.fromJson(bytes.string(StandardCharsets.UTF_8), JsonNode.class);
+//        System.out.println(jsonNode);
         try {
             tradePrice = objectMapper.readValue(bytes.string(StandardCharsets.UTF_8), TradePrice.class);
         } catch (JsonProcessingException e) {

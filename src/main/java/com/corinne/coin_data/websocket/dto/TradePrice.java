@@ -3,12 +3,15 @@ package com.corinne.coin_data.websocket.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @ToString
-public class TradePrice {
+public class TradePrice implements Serializable {
+    private static final long serialVersionUID = 6494678977089006639L;
     public String type; // ticker
     public String code; // market KRW-BTC
     public Long opening_price; // 시가

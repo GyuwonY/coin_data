@@ -4,7 +4,6 @@ import com.corinne.coin_data.collector.UpbitWebsocket;
 import com.corinne.coin_data.websocket.repository.RedisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;

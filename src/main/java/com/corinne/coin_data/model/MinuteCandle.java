@@ -3,12 +3,14 @@ package com.corinne.coin_data.model;
 import com.corinne.coin_data.websocket.model.MinuteCandleDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@ToString
 @Table(name = "tbl_minutecandle")
 public class MinuteCandle {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
