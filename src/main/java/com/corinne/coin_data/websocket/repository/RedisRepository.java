@@ -50,47 +50,75 @@ public class RedisRepository {
         topics = new HashMap<>();
     }
 
+    /**
+     * 실시간 현재가 저장 메소드
+     */
     public void savePrice(PricePublishingDto pricePublishingDto){
         prices.rightPush(pricePublishingDto.getTiker(), pricePublishingDto);
         tradePrice.set(pricePublishingDto.getTiker()+"tradeprice", pricePublishingDto.getTradePrice());
     }
 
+    /**
+     * 실시간 데이터 현재가 리턴
+     */
+    public Long getTradePrice(String tiker){
+        return objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), Long.class);
+    }
 
-    // 스케줄러를 통해 실행
+    /**
+     * 스케줄러를 통해 실행 - 캐시 DB에 저장된 실시간 데이터를 이용하여 분봉 dto를 생성하여 리턴한다.
+     */
     public MinuteCandleDto getMinuteCandle(String tiker){
         PricePublishingDto firstPrice = objectMapper.convertValue(prices.leftPop(tiker), PricePublishingDto.class);
-        MinuteCandleDto minuteCandleDto = new MinuteCandleDto(firstPrice);
-        while (true){
-            PricePublishingDto price = objectMapper.convertValue(prices.leftPop(tiker), PricePublishingDto.class);
-            if(firstPrice.getTradeTime()/100==price.getTradeTime()/100) {
-                if (price.getTradePrice() > minuteCandleDto.getHighPrice()) {
-                    minuteCandleDto.setHighPrice(price.getTradePrice());
+        MinuteCandleDto minuteCandleDto;
+
+        if(firstPrice == null) {
+            minuteCandleDto = getLastCandle(tiker);
+        }else {
+            minuteCandleDto = new MinuteCandleDto(firstPrice);
+
+            while (true) {
+                PricePublishingDto price = objectMapper.convertValue(prices.leftPop(tiker), PricePublishingDto.class);
+
+                if (price == null) {
+                    break;
                 }
-                if (price.getTradePrice() < minuteCandleDto.getLowPrice()) {
-                    minuteCandleDto.setLowPrice(price.getTradePrice());
+
+                if (firstPrice.getTradeTime() / 100L == price.getTradeTime() / 100L) {
+                    if (price.getTradePrice() > minuteCandleDto.getHighPrice()) {
+                        minuteCandleDto.setHighPrice(price.getTradePrice());
+                    }
+
+                    if (price.getTradePrice() < minuteCandleDto.getLowPrice()) {
+                        minuteCandleDto.setLowPrice(price.getTradePrice());
+                    }
+
+                    minuteCandleDto.setEndPrice(price.getTradePrice());
+                } else {
+                    prices.leftPush(tiker, price);
+                    break;
                 }
-                minuteCandleDto.setEndPrice(price.getTradePrice());
-            }else {
-                prices.leftPush(tiker, price);
-                break;
             }
+
+            lastCandle.put("lastcandle", tiker, minuteCandleDto);
         }
 
-        lastCandle.put("lastcandle", tiker, minuteCandleDto);
-
         return minuteCandleDto;
     }
 
-    public MinuteCandleDto getLastCandle(String tiker) {
+
+
+    private MinuteCandleDto getLastCandle(String tiker) {
         MinuteCandleDto minuteCandleDto = objectMapper.convertValue(lastCandle.get("lastcandle", tiker), MinuteCandleDto.class);
-        minuteCandleDto.setTradeTime(minuteCandleDto.getTradeTime()+1L);
-        System.out.println(minuteCandleDto);
-        lastCandle.put("lastcandle", tiker, minuteCandleDto);
-        return minuteCandleDto;
-    }
 
-    public Long getTradePrice(String tiker){
-        return (Long)tradePrice.get(tiker+"tradeprice");
+        if(minuteCandleDto == null){
+            minuteCandleDto = new MinuteCandleDto(tiker, 0L, 0L, 0L, 0L, 0L, 0L);
+        }else {
+            minuteCandleDto.setTradeTime(minuteCandleDto.getTradeTime() + 1L);
+            lastCandle.put("lastcandle", tiker, minuteCandleDto);
+        }
+
+        return minuteCandleDto;
     }
 
     /**
@@ -98,22 +126,28 @@ public class RedisRepository {
      */
     public void enterChatRoom(ChatMessage message) {
         ChannelTopic topic = topics.get(message.getTopicName());
-        if (topic == null)
+
+        if (topic == null) {
             topic = new ChannelTopic(message.getTopicName());
+        }
+
         redisMessageListener.addMessageListener(redisSubscriber, topic);
         topics.put(message.getTopicName(), topic);
     }
 
     public void enterTopic(String topicName) {
         ChannelTopic topic = topics.get(topicName);
+
         if (topic == null) {
             topic = new ChannelTopic(topicName);
         }
+
         redisMessageListener.addMessageListener(redisSubscriber, topic);
         topics.put(topicName, topic);
     }
 
     public ChannelTopic getTopic(String topicName) {
+
         return topics.get(topicName);
     }
 

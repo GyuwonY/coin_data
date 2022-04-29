@@ -25,6 +25,6 @@ public class ChatController {
         }
 
         // Websocket에 발행된 메시지를 redis로 발행한다(publish)
-        redisPublisher.publish(redisRepository.getTopic(message.getTopicName()), message);
+        redisPublisher.publish(redisRepository.getTopic("corinnechat"), message);
     }
 }

@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,31 +23,15 @@ public class MinuteScheduler {
         this.redisRepository = redisRepository;
     }
 
-    @Scheduled(cron = "0 * * * * ?")
-    public void saveMinuteCandle() throws IllegalAccessException {
+    @Scheduled(cron = "1 * * * * ?")
+    public void saveMinuteCandle(){
         for(String tiker : tikers) {
-
             MinuteCandle minuteCandle = new MinuteCandle(redisRepository.getMinuteCandle(tiker));
-            if(isNull(minuteCandle)){
-                minuteCandle = new MinuteCandle(redisRepository.getLastCandle(tiker));
-            }
             minuteCandleRepository.save(minuteCandle);
             if(minuteCandleRepository.countAllByTiker(tiker).equals(1440L)){
                 minuteCandleRepository.delete(minuteCandleRepository.findFirstByTiker(tiker));
             }
 
         }
-    }
-
-    private boolean isNull(MinuteCandle minuteCandle) throws IllegalAccessException {
-        for (Field f : minuteCandle.getClass().getDeclaredFields()) {
-            f.setAccessible(true);
-            if (!f.getName().equals("minuteCandleId")) {
-                if (f.get(minuteCandle) == null) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

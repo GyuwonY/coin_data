@@ -19,7 +19,9 @@ public class ChatMessage implements Serializable {
     }
 
     private MessageType type; // 메시지 타입
-    private Long messageSender; // 메시지 보낸사람
     private String topicName;
+    private String nickname; // 메시지 보낸사람
+    private String imageUrl;
+    private Long exp;
     private String message; // 메시지
 }

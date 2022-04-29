@@ -27,6 +27,6 @@ public class MinuteCandleDto implements Serializable {
         this.lowPrice = dto.getTradePrice();
         this.endPrice = dto.getTradePrice();
         this.tradeDate = dto.getTradeDate();
-        this.tradeTime = dto.getTradeTime()/100;
+        this.tradeTime = dto.getTradeTime()/100L;
     }
 }
