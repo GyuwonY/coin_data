@@ -29,7 +29,7 @@ public class RedisRepository {
     private Map<String, ChannelTopic> topics;
     private ValueOperations<String, Object> tradePrice;
     private ListOperations<String, Object> prices;
-    private HashOperations<String, String, Object> lastCandle;
+    private HashOperations<String, String, Object> lastCandles;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -46,7 +46,7 @@ public class RedisRepository {
     private void init() {
         tradePrice = redisTemplate.opsForValue();
         prices = redisTemplate.opsForList();
-        lastCandle = redisTemplate.opsForHash();
+        lastCandles = redisTemplate.opsForHash();
         topics = new HashMap<>();
     }
 
@@ -99,9 +99,9 @@ public class RedisRepository {
                     break;
                 }
             }
-
-            lastCandle.put("lastcandle", tiker, minuteCandleDto);
         }
+
+        lastCandles.put("lastcandle", tiker, minuteCandleDto);
 
         return minuteCandleDto;
     }
@@ -109,13 +109,16 @@ public class RedisRepository {
 
 
     private MinuteCandleDto getLastCandle(String tiker) {
-        MinuteCandleDto minuteCandleDto = objectMapper.convertValue(lastCandle.get("lastcandle", tiker), MinuteCandleDto.class);
+        MinuteCandleDto minuteCandleDto = objectMapper.convertValue(lastCandles.get("lastcandle", tiker), MinuteCandleDto.class);
 
         if(minuteCandleDto == null){
             minuteCandleDto = new MinuteCandleDto(tiker, 0, 0, 0, 0, 0, 0);
         }else {
             minuteCandleDto.setTradeTime(minuteCandleDto.getTradeTime() + 1);
-            lastCandle.put("lastcandle", tiker, minuteCandleDto);
+            minuteCandleDto.setHighPrice(minuteCandleDto.getEndPrice());
+            minuteCandleDto.setLowPrice(minuteCandleDto.getEndPrice());
+            minuteCandleDto.setStartPrice(minuteCandleDto.getEndPrice());
+            lastCandles.put("lastcandle", tiker, minuteCandleDto);
         }
 
         return minuteCandleDto;
