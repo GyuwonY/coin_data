@@ -21,22 +21,22 @@ public class MinuteCandle {
     private String tiker;
 
     @Column(nullable = false)
-    private Long highPrice;
+    private int highPrice;
 
     @Column(nullable = false)
-    private Long lowPrice;
+    private int lowPrice;
 
     @Column(nullable = false)
-    private Long startPrice;
+    private int startPrice;
 
     @Column(nullable = false)
-    private Long endPrice;
+    private int endPrice;
 
     @Column(nullable = false)
-    private Long tradeDate;
+    private int tradeDate;
 
     @Column(nullable = false)
-    private Long tradeTime;
+    private int tradeTime;
 
     public MinuteCandle(MinuteCandleDto minuteCandleDto){
         this.tiker = minuteCandleDto.getTiker();

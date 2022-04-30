@@ -84,7 +84,7 @@ public class RedisRepository {
                     break;
                 }
 
-                if (firstPrice.getTradeTime() / 100L == price.getTradeTime() / 100L) {
+                if (firstPrice.getTradeTime() / 100 == price.getTradeTime() / 100) {
                     if (price.getTradePrice() > minuteCandleDto.getHighPrice()) {
                         minuteCandleDto.setHighPrice(price.getTradePrice());
                     }
@@ -112,9 +112,9 @@ public class RedisRepository {
         MinuteCandleDto minuteCandleDto = objectMapper.convertValue(lastCandle.get("lastcandle", tiker), MinuteCandleDto.class);
 
         if(minuteCandleDto == null){
-            minuteCandleDto = new MinuteCandleDto(tiker, 0L, 0L, 0L, 0L, 0L, 0L);
+            minuteCandleDto = new MinuteCandleDto(tiker, 0, 0, 0, 0, 0, 0);
         }else {
-            minuteCandleDto.setTradeTime(minuteCandleDto.getTradeTime() + 1L);
+            minuteCandleDto.setTradeTime(minuteCandleDto.getTradeTime() + 1);
             lastCandle.put("lastcandle", tiker, minuteCandleDto);
         }
 

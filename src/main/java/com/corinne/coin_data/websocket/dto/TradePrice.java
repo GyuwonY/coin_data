@@ -17,7 +17,7 @@ public class TradePrice implements Serializable {
     public Long opening_price; // 시가
     public Long high_price; // 고가
     public Long low_price;// 저가
-    public Long trade_price; // 현재가
+    public int trade_price; // 현재가
     public Long prev_closing_price; // 전일 종가
     public String change; // RISE : 상승, EVEN : 보합, FALL : 하락  TODO enum
     public Long change_price; // 부호 없는 전일 대비 값
@@ -30,8 +30,8 @@ public class TradePrice implements Serializable {
     public Long acc_trade_volume_24h; // 24시간 누적 거래량
     public Long acc_trade_price; // 누적 거래대금(UTC 0시 기준)
     public Long acc_trade_price_24h; // 24시간 누적 거래대금
-    public Long trade_date; // 최근 거래 일자(UTC) yyyyMMdd
-    public Long trade_time; // 최근 거래 시각(UTC) HHmmss
+    public int trade_date; // 최근 거래 일자(UTC) yyyyMMdd
+    public int trade_time; // 최근 거래 시각(UTC) HHmmss
     public Long trade_timestamp; // 체결 타임스탬프 (milliseconds)
     public Long acc_ask_volume; // 누적 매도량
     public Long acc_bid_volume; // 누적 매수량

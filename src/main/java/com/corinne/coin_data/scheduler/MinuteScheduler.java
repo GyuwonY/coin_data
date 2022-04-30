@@ -15,7 +15,7 @@ import java.util.List;
 public class MinuteScheduler {
     private final MinuteCandleRepository minuteCandleRepository;
     private final RedisRepository redisRepository;
-    private final List<String> tikers = Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC", "KRW-CRO");
+    private final List<String> tikers = Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC");
 
     @Autowired
     public MinuteScheduler(MinuteCandleRepository minuteCandleRepository, RedisRepository redisRepository){

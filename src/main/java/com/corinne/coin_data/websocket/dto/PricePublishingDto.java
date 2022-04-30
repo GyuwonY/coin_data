@@ -12,9 +12,9 @@ import java.io.Serializable;
 public class PricePublishingDto implements Serializable {
     private static final long serialVersionUID = 6494678977089006639L;
     private String tiker;
-    private Long tradePrice;
-    private Long tradeDate;
-    private Long tradeTime;
+    private int tradePrice;
+    private int tradeDate;
+    private int tradeTime;
     private Long tradeVolume;
 
     public PricePublishingDto(TradePrice tradePrice){

@@ -20,7 +20,7 @@ public class UpbitWebsocket {
                 .url("wss://api.upbit.com/websocket/v1")
                 .build();
 
-        webSocketListener.setParameter(SiseType.TICKER, Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC", "KRW-CRO"));
+        webSocketListener.setParameter(SiseType.TICKER, Arrays.asList("KRW-BTC","KRW-SOL","KRW-ETH","KRW-XRP", "KRW-ADA", "KRW-DOGE", "KRW-AVAX", "KRW-DOT", "KRW-MATIC"));
 
         client.newWebSocket(request, webSocketListener);
         client.dispatcher().executorService().shutdown();

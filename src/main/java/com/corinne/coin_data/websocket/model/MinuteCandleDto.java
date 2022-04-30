@@ -13,12 +13,12 @@ import java.io.Serializable;
 public class MinuteCandleDto implements Serializable {
     private static final long serialVersionUID = 6494678977089006639L;
     private String tiker;
-    private Long highPrice;
-    private Long lowPrice;
-    private Long startPrice;
-    private Long endPrice;
-    private Long tradeDate;
-    private Long tradeTime;
+    private int highPrice;
+    private int lowPrice;
+    private int startPrice;
+    private int endPrice;
+    private int tradeDate;
+    private int tradeTime;
 
     public MinuteCandleDto(PricePublishingDto dto){
         this.tiker = dto.getTiker();
@@ -27,6 +27,6 @@ public class MinuteCandleDto implements Serializable {
         this.lowPrice = dto.getTradePrice();
         this.endPrice = dto.getTradePrice();
         this.tradeDate = dto.getTradeDate();
-        this.tradeTime = dto.getTradeTime()/100L;
+        this.tradeTime = dto.getTradeTime()/100;
     }
 }
