@@ -61,8 +61,6 @@ public class UpbitWebSocketListener extends WebSocketListener {
     //실질적인 데이터가 찍히는 곳
     @Override
     public void onMessage(@NotNull WebSocket webSocket, @NotNull ByteString bytes) {
-//        JsonNode jsonNode = JsonUtil.fromJson(bytes.string(StandardCharsets.UTF_8), JsonNode.class);
-//        System.out.println(jsonNode);
         try {
             tradePrice = objectMapper.readValue(bytes.string(StandardCharsets.UTF_8), TradePrice.class);
         } catch (JsonProcessingException e) {

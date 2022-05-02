@@ -28,7 +28,7 @@ public class MinuteScheduler {
         for(String tiker : tikers) {
             MinuteCandle minuteCandle = new MinuteCandle(redisRepository.getMinuteCandle(tiker));
             minuteCandleRepository.save(minuteCandle);
-            if(minuteCandleRepository.countAllByTiker(tiker).equals(1440L)){
+            if(minuteCandleRepository.countAllByTiker(tiker).equals(1441L)){
                 minuteCandleRepository.delete(minuteCandleRepository.findFirstByTiker(tiker));
             }
 

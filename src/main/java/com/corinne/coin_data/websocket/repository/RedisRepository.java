@@ -2,6 +2,7 @@ package com.corinne.coin_data.websocket.repository;
 
 import com.corinne.coin_data.websocket.controller.RedisSubscriber;
 import com.corinne.coin_data.websocket.dto.PricePublishingDto;
+import com.corinne.coin_data.websocket.model.BankruptcyDto;
 import com.corinne.coin_data.websocket.model.ChatMessage;
 import com.corinne.coin_data.websocket.model.MinuteCandleDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,21 +26,25 @@ public class RedisRepository {
     private final RedisSubscriber redisSubscriber;
     // Redis
     private final RedisTemplate<String, Object> redisTemplate;
+    private final CoinRepository coinRepository;
+
     // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
     private Map<String, ChannelTopic> topics;
     private ValueOperations<String, Object> tradePrice;
     private ListOperations<String, Object> prices;
     private HashOperations<String, String, Object> lastCandles;
+    private ListOperations<String,Object> bankruptcy;
 
     @Autowired
     ObjectMapper objectMapper;
 
     @Autowired
     public RedisRepository(RedisMessageListenerContainer redisMessageListener, RedisTemplate<String, Object> redisTemplate,
-                           RedisSubscriber redisSubscriber) {
+                           RedisSubscriber redisSubscriber, CoinRepository coinRepository) {
         this.redisMessageListener = redisMessageListener;
         this.redisTemplate = redisTemplate;
         this.redisSubscriber = redisSubscriber;
+        this.coinRepository = coinRepository;
     }
 
     @PostConstruct
@@ -48,6 +53,7 @@ public class RedisRepository {
         prices = redisTemplate.opsForList();
         lastCandles = redisTemplate.opsForHash();
         topics = new HashMap<>();
+        bankruptcy = redisTemplate.opsForList();
     }
 
     /**
@@ -61,8 +67,34 @@ public class RedisRepository {
     /**
      * 실시간 데이터 현재가 리턴
      */
-    public Long getTradePrice(String tiker){
-        return objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), Long.class);
+    public int getTradePrice(String tiker){
+        return objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), Integer.class);
+    }
+
+    /**
+     * 파산인 경우 보유 코인 삭제처리
+     */
+    public void isBankruptcy(PricePublishingDto pricePublishingDto){
+
+        for(Long i = 0L; i <= bankruptcy.size(pricePublishingDto.getTiker()+"bankruptcy"); i++) {
+            BankruptcyDto bankruptcyDto = objectMapper.convertValue(
+                    bankruptcy.index(pricePublishingDto.getTiker()+"bankruptcy", i), BankruptcyDto.class);
+            if(bankruptcyDto == null){
+                break;
+            }else {
+                if (pricePublishingDto.getTiker().equals(bankruptcyDto.getTiker())) {
+                    if (pricePublishingDto.getTradePrice() <= bankruptcyDto.getBankruptcyPrice()) {
+                        coinRepository.deleteByTikerAndUser_UserId(bankruptcyDto.getTiker(), bankruptcyDto.getUserId());
+
+                        //파산에 대한 알림 보내줘야함
+                    } else {
+                        bankruptcy.leftPush(pricePublishingDto.getTiker() + "bankruptcy", bankruptcyDto);
+                    }
+                } else {
+                    bankruptcy.leftPush(pricePublishingDto.getTiker() + "bankruptcy", bankruptcyDto);
+                }
+            }
+        }
     }
 
     /**
@@ -106,8 +138,9 @@ public class RedisRepository {
         return minuteCandleDto;
     }
 
-
-
+    /**
+     * 1분동안 거래가 발생되지 않는 경우 마지막으로 거래된 분봉 정보를 통해 분봉을 만든다.
+     */
     private MinuteCandleDto getLastCandle(String tiker) {
         MinuteCandleDto minuteCandleDto = objectMapper.convertValue(lastCandles.get("lastcandle", tiker), MinuteCandleDto.class);
 
