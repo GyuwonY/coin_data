@@ -3,7 +3,6 @@ package com.corinne.coin_data.collector;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.WebSocketListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
