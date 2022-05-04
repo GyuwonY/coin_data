@@ -1,5 +1,6 @@
 package com.corinne.coin_data.websocket.controller;
 
+import com.corinne.coin_data.websocket.dto.BankruptcyAlarmDto;
 import com.corinne.coin_data.websocket.dto.PricePublishingDto;
 import com.corinne.coin_data.websocket.model.ChatMessage;
 import lombok.RequiredArgsConstructor;
@@ -18,5 +19,9 @@ public class RedisPublisher {
 
     public void publish(ChannelTopic topic, PricePublishingDto price) {
         redisTemplate.convertAndSend(topic.getTopic(), price);
+    }
+
+    public void publish(ChannelTopic topic, BankruptcyAlarmDto alarm) {
+        redisTemplate.convertAndSend(topic.getTopic(), alarm);
     }
 }

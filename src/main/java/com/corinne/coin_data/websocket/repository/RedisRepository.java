@@ -1,6 +1,8 @@
 package com.corinne.coin_data.websocket.repository;
 
+import com.corinne.coin_data.websocket.controller.RedisPublisher;
 import com.corinne.coin_data.websocket.controller.RedisSubscriber;
+import com.corinne.coin_data.websocket.dto.BankruptcyAlarmDto;
 import com.corinne.coin_data.websocket.dto.PricePublishingDto;
 import com.corinne.coin_data.websocket.model.BankruptcyDto;
 import com.corinne.coin_data.websocket.model.ChatMessage;
@@ -24,6 +26,7 @@ public class RedisRepository {
     private final RedisMessageListenerContainer redisMessageListener;
     // 구독 처리 서비스
     private final RedisSubscriber redisSubscriber;
+    private final RedisPublisher redisPublisher;
     // Redis
     private final RedisTemplate<String, Object> redisTemplate;
     private final CoinRepository coinRepository;
@@ -40,11 +43,12 @@ public class RedisRepository {
 
     @Autowired
     public RedisRepository(RedisMessageListenerContainer redisMessageListener, RedisTemplate<String, Object> redisTemplate,
-                           RedisSubscriber redisSubscriber, CoinRepository coinRepository) {
+                           RedisSubscriber redisSubscriber, CoinRepository coinRepository, RedisPublisher redisPublisher) {
         this.redisMessageListener = redisMessageListener;
         this.redisTemplate = redisTemplate;
         this.redisSubscriber = redisSubscriber;
         this.coinRepository = coinRepository;
+        this.redisPublisher = redisPublisher;
     }
 
     @PostConstruct
@@ -85,8 +89,10 @@ public class RedisRepository {
                 if (pricePublishingDto.getTiker().equals(bankruptcyDto.getTiker())) {
                     if (pricePublishingDto.getTradePrice() <= bankruptcyDto.getBankruptcyPrice()) {
                         coinRepository.deleteByTikerAndUser_UserId(bankruptcyDto.getTiker(), bankruptcyDto.getUserId());
+                        enterTopic(Long.toString(bankruptcyDto.getUserId()));
 
-                        //파산에 대한 알림 보내줘야함
+                        redisPublisher.publish(getTopic(Long.toString(bankruptcyDto.getUserId())), new BankruptcyAlarmDto(bankruptcyDto));
+
                     } else {
                         bankruptcy.leftPush(pricePublishingDto.getTiker() + "bankruptcy", bankruptcyDto);
                     }
