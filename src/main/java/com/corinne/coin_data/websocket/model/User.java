@@ -30,9 +30,6 @@ public class User {
     @Column(nullable = false)
     private Long accountBalance;
 
-    @Column(nullable = false, unique = true)
-    private Long kakaoId;
-
     @Column(nullable = false)
     private int exp;
 
