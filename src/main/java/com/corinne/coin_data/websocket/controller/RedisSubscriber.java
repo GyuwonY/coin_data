@@ -1,5 +1,6 @@
 package com.corinne.coin_data.websocket.controller;
 
+import com.corinne.coin_data.websocket.dto.PricePublishingDto;
 import com.corinne.coin_data.websocket.model.ChatMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +28,17 @@ public class RedisSubscriber implements MessageListener {
         try {
             // redis에서 발행된 데이터를 받아 deserialize
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-            // ChatMessage 객채로 맵핑
-            ChatMessage roomMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
-            // Websocket 구독자에게 채팅 메시지 Send
-            messagingTemplate.convertAndSend("/sub/topic/" + roomMessage.getTopicName(), roomMessage);
+            if(!publishMessage.contains("type")) {
+                PricePublishingDto tradePrice = objectMapper.readValue(publishMessage, PricePublishingDto.class);
+                messagingTemplate.convertAndSend("/sub/topic/" + tradePrice.getTiker(), tradePrice);
+            }else {
+                // ChatMessage 객채로 맵핑
+                ChatMessage roomMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
+                // Websocket 구독자에게 채팅 메시지 Send
+                messagingTemplate.convertAndSend("/sub/topic/" + roomMessage.getTopicName(), roomMessage);
+            }
+
+
         } catch (Exception e) {
             log.error(e.getMessage());
         }

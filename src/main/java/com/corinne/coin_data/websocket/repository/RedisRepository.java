@@ -2,7 +2,6 @@ package com.corinne.coin_data.websocket.repository;
 
 import com.corinne.coin_data.websocket.controller.RedisPublisher;
 import com.corinne.coin_data.websocket.controller.RedisSubscriber;
-import com.corinne.coin_data.websocket.dto.BankruptcyAlarmDto;
 import com.corinne.coin_data.websocket.dto.PricePublishingDto;
 import com.corinne.coin_data.websocket.model.BankruptcyDto;
 import com.corinne.coin_data.websocket.model.ChatMessage;
@@ -91,7 +90,7 @@ public class RedisRepository {
                         coinRepository.deleteByTikerAndUser_UserId(bankruptcyDto.getTiker(), bankruptcyDto.getUserId());
                         enterTopic(Long.toString(bankruptcyDto.getUserId()));
 
-                        redisPublisher.publish(getTopic(Long.toString(bankruptcyDto.getUserId())), new BankruptcyAlarmDto(bankruptcyDto));
+                        redisPublisher.publish(getTopic(Long.toString(bankruptcyDto.getUserId())), new ChatMessage(bankruptcyDto));
 
                     } else {
                         bankruptcy.leftPush(pricePublishingDto.getTiker() + "bankruptcy", bankruptcyDto);
