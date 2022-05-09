@@ -66,14 +66,7 @@ public class RedisRepository {
      */
     public void savePrice(PricePublishingDto pricePublishingDto){
         prices.rightPush(pricePublishingDto.getTiker(), pricePublishingDto);
-        tradePrice.set(pricePublishingDto.getTiker()+"tradeprice", pricePublishingDto.getTradePrice());
-    }
-
-    /**
-     * 실시간 데이터 현재가 리턴
-     */
-    public int getTradePrice(String tiker){
-        return objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), Integer.class);
+        tradePrice.set(pricePublishingDto.getTiker()+"tradeprice", pricePublishingDto);
     }
 
     /**
@@ -81,7 +74,9 @@ public class RedisRepository {
      */
     @Transactional
     public void isBankruptcy(PricePublishingDto pricePublishingDto){
-        if(bankruptcy.size(pricePublishingDto.getTiker()+"bankruptcy") != null) {
+        BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(pricePublishingDto.getTiker() + "bankruptcy"), BankruptcyDto.class);
+        if(checkDto != null){
+            bankruptcy.leftPush(pricePublishingDto.getTiker() + "bankruptcy", checkDto);
             for (Long i = 0L; i <= bankruptcy.size(pricePublishingDto.getTiker() + "bankruptcy"); i++) {
                 BankruptcyDto bankruptcyDto = objectMapper.convertValue(
                         bankruptcy.index(pricePublishingDto.getTiker() + "bankruptcy", i), BankruptcyDto.class);

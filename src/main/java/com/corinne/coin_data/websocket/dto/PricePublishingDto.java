@@ -17,11 +17,11 @@ public class PricePublishingDto implements Serializable {
     private int tradeDate;
     private int tradeTime;
     private Long tradeVolume;
-    private Long highPrice;
-    private Long lowPrice;
-    private Long prevClosingPrice;
-    private Long signedChangePrice;
-    private Long signedChangeRate;
+    private int highPrice;
+    private int lowPrice;
+    private int prevClosingPrice;
+    private int signedChangePrice;
+    private float signedChangeRate;
 
     public PricePublishingDto(TradePrice tradePrice){
         this.tiker = tradePrice.getCode();
@@ -33,6 +33,6 @@ public class PricePublishingDto implements Serializable {
         this.lowPrice = tradePrice.getLow_price();
         this.prevClosingPrice = tradePrice.getPrev_closing_price();
         this.signedChangePrice = tradePrice.getSigned_change_price();
-        this.signedChangeRate = tradePrice.getSigned_change_rate();
+        this.signedChangeRate = tradePrice.getSigned_change_rate()*100;
     }
 }

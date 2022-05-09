@@ -15,15 +15,15 @@ public class TradePrice implements Serializable {
     public String type; // ticker
     public String code; // market KRW-BTC
     public Long opening_price; // 시가
-    public Long high_price; // 고가
-    public Long low_price;// 저가
+    public int high_price; // 고가
+    public int low_price;// 저가
     public int trade_price; // 현재가
-    public Long prev_closing_price; // 전일 종가
+    public int prev_closing_price; // 전일 종가
     public String change; // RISE : 상승, EVEN : 보합, FALL : 하락  TODO enum
     public Long change_price; // 부호 없는 전일 대비 값
-    public Long signed_change_price; // 전일 대비 값
+    public int signed_change_price; // 전일 대비 값
     public Long change_rate; // 부호 없는 전일 대비 등락율
-    public Long signed_change_rate; // 전일 대비 등락율
+    public float signed_change_rate; // 전일 대비 등락율
     public String ask_bid; // 매수/매도 구분
     public Long trade_volume; // 가장 최근 거래량
     public Long acc_trade_volume; // 누적 거래량(UTC 0시 기준)
