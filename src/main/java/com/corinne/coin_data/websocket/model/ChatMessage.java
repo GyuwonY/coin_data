@@ -1,14 +1,14 @@
 package com.corinne.coin_data.websocket.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessage implements Serializable {
 
     private static final long serialVersionUID = 6494678977089006639L;

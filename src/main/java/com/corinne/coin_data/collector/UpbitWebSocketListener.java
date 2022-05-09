@@ -70,6 +70,7 @@ public class UpbitWebSocketListener extends WebSocketListener {
             redisRepository.enterTopic(tradePrice.getCode());
         }else {
             redisPublisher.publish(redisRepository.getTopic(tradePrice.getCode()), new PricePublishingDto(tradePrice));
+            redisRepository.isBankruptcy(new PricePublishingDto(tradePrice));
             redisRepository.savePrice(new PricePublishingDto(tradePrice));
         }
     }

@@ -23,6 +23,8 @@ public class RedisSubscriber implements MessageListener {
     /**
      * Redis에서 메시지가 발행(publish)되면 대기하고 있던 onMessage가 해당 메시지를 받아 처리한다.
      */
+
+
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {

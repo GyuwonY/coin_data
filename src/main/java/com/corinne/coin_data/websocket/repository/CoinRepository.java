@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CoinRepository extends JpaRepository<Coin, Long> {
 
     void deleteByTikerAndUser_UserId(String tiker, Long userId);
+    void deleteByCoinId(Long coinId);
 }

@@ -1,7 +1,10 @@
 package com.corinne.coin_data.websocket.controller;
 
+import com.corinne.coin_data.websocket.jwt.HeaderTokenExtractor;
+import com.corinne.coin_data.websocket.jwt.JwtDecoder;
 import com.corinne.coin_data.websocket.model.ChatMessage;
 import com.corinne.coin_data.websocket.repository.RedisRepository;
+import com.corinne.coin_data.websocket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,10 +21,7 @@ public class ChatController {
     @MessageMapping("/chat/message")
     public void message(ChatMessage message) {
         if(ChatMessage.MessageType.ENTER.equals(message.getType())){
-            // 메세지 보낸 사람의 ID를 통해 nickName을 찾아 넣어줘야함
-            //  FindByuserId      message.getMessageSender();
-            String nickname = "닉네임";
-            message.setMessage(nickname + "님이 입장하셨습니다.");
+            message.setMessage(message.getMessage() + "님이 입장하셨습니다.");
         }
 
         // Websocket에 발행된 메시지를 redis로 발행한다(publish)

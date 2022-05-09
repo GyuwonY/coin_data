@@ -15,6 +15,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,26 +79,25 @@ public class RedisRepository {
     /**
      * 파산인 경우 보유 코인 삭제처리
      */
+    @Transactional
     public void isBankruptcy(PricePublishingDto pricePublishingDto){
-
-        for(Long i = 0L; i <= bankruptcy.size(pricePublishingDto.getTiker()+"bankruptcy"); i++) {
-            BankruptcyDto bankruptcyDto = objectMapper.convertValue(
-                    bankruptcy.index(pricePublishingDto.getTiker()+"bankruptcy", i), BankruptcyDto.class);
-            if(bankruptcyDto == null){
-                break;
-            }else {
-                if (pricePublishingDto.getTiker().equals(bankruptcyDto.getTiker())) {
-                    if (pricePublishingDto.getTradePrice() <= bankruptcyDto.getBankruptcyPrice()) {
-                        coinRepository.deleteByTikerAndUser_UserId(bankruptcyDto.getTiker(), bankruptcyDto.getUserId());
-                        enterTopic(Long.toString(bankruptcyDto.getUserId()));
-
-                        redisPublisher.publish(getTopic(Long.toString(bankruptcyDto.getUserId())), new ChatMessage(bankruptcyDto));
-
-                    } else {
-                        bankruptcy.leftPush(pricePublishingDto.getTiker() + "bankruptcy", bankruptcyDto);
-                    }
+        if(bankruptcy.size(pricePublishingDto.getTiker()+"bankruptcy") != null) {
+            for (Long i = 0L; i <= bankruptcy.size(pricePublishingDto.getTiker() + "bankruptcy"); i++) {
+                BankruptcyDto bankruptcyDto = objectMapper.convertValue(
+                        bankruptcy.index(pricePublishingDto.getTiker() + "bankruptcy", i), BankruptcyDto.class);
+                if (bankruptcyDto == null) {
+                    break;
                 } else {
-                    bankruptcy.leftPush(pricePublishingDto.getTiker() + "bankruptcy", bankruptcyDto);
+                    if (pricePublishingDto.getTiker().equals(bankruptcyDto.getTiker())) {
+                        if (pricePublishingDto.getTradePrice() <= bankruptcyDto.getBankruptcyPrice()) {
+                            coinRepository.deleteByCoinId(bankruptcyDto.getCoinId());
+                            bankruptcy.remove(pricePublishingDto.getTiker() + "bankruptcy", i, bankruptcyDto);
+                            enterTopic(Long.toString(bankruptcyDto.getUserId()));
+
+                            redisPublisher.publish(getTopic(Long.toString(bankruptcyDto.getUserId())), new ChatMessage(bankruptcyDto));
+
+                        }
+                    }
                 }
             }
         }
