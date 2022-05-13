@@ -27,6 +27,7 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         if (StompCommand.CONNECT == accessor.getCommand()) {
             jwtDecoder.decodeEmail(headerTokenExtractor.extract(accessor.getFirstNativeHeader("token")));
+        }else if (StompCommand.DISCONNECT == accessor.getCommand()) {
         }
         return message;
     }

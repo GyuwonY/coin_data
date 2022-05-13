@@ -11,11 +11,8 @@ public final class JwtTokenUtils {
 
     private static final int JWT_TOKEN_VALID_SEC = 3 * DAY;
 
-    private static final int JWT_TOKEN_VALID_MILLI_SEC = JWT_TOKEN_VALID_SEC * 1000;
-
     public static final String CLAIM_EXPIRED_DATE = "EXPIRED_DATE";
-    public static final String CLAIM_USER_EMAIL = "USER_EMAIL";
-    public static final String CLAIM_USER_NICKNAME = "CLAIM_USER_NICKNAME";
+    public static final String CLAIM_USER_ID = "USER_ID";
     public static final String JWT_SECRET = "jwt_secret_!@#$%";
 
     private static Algorithm generateAlgorithm() {

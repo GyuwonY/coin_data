@@ -39,6 +39,9 @@ public class User {
     @Column(nullable = false)
     private double lastFluctuation;
 
+    @Version
+    private Integer version;
+
 }
 
 

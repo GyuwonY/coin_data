@@ -54,7 +54,7 @@ public class MinuteScheduler {
         }
     }
 
-    @Scheduled(cron = "1 0 0 * * ?")
+    @Scheduled(cron = "2 0 0 * * ?")
     public void saveDayCandle() {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         for (String tiker : tikers) {
@@ -73,6 +73,13 @@ public class MinuteScheduler {
                 }
             }
 
+        }
+    }
+
+    @Scheduled(cron = "0/1 * * * * ?")
+    public void bankruptcyCheck() {
+        for(String tiker : tikers) {
+            redisRepository.isBankruptcy(tiker);
         }
     }
 }

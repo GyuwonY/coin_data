@@ -17,4 +17,6 @@ public class BankruptcyDto implements Serializable {
     private Long userId;
     private Long coinId;
     private int bankruptcyPrice;
+
+
 }

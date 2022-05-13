@@ -14,7 +14,7 @@ public class TopicController {
     }
 
     // 알람을 위한 Topic 생성 후 sub할 Topic return
-    @GetMapping("/chart/{userId}")
+    @GetMapping("/chat/{userId}")
     public void insertTopic(@PathVariable String userId){
         redisRepository.enterTopic(userId);
     }
