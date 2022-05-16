@@ -39,6 +39,18 @@ public class User {
     @Column(nullable = false)
     private double lastFluctuation;
 
+    @Column(nullable = false)
+    private int lastRank;
+
+    @Column(nullable = false)
+    private int highRank;
+
+    @Column(nullable = false)
+    private boolean alarm = false;
+
+    @Column(nullable = false)
+    private Long rival = 0L;
+
     @Version
     private Integer version;
 

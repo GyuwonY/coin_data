@@ -21,7 +21,7 @@ public class ChatController {
     @MessageMapping("/chat/message")
     public void message(ChatMessage message) {
         if(ChatMessage.MessageType.ENTER.equals(message.getType())){
-            message.setMessage(message.getMessage() + "님이 입장하셨습니다.");
+            message.setMessage(message.getNickname() + "님이 입장하셨습니다.");
         }
 
         // Websocket에 발행된 메시지를 redis로 발행한다(publish)

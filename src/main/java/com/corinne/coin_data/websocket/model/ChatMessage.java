@@ -15,7 +15,7 @@ public class ChatMessage implements Serializable {
 
     // 메시지 타입 : 입장, 채팅
     public enum MessageType {
-        ENTER, TALK, ALARM
+        ENTER, TALK, ALARM, BANKRUPTCY
     }
 
     private MessageType type; // 메시지 타입
@@ -27,7 +27,7 @@ public class ChatMessage implements Serializable {
     private String message; // 메시지
 
     public ChatMessage(BankruptcyDto dto){
-        this.type = MessageType.ALARM;
-        this.message = "tiker : " + dto.getTiker() + "\n청산가 : " + dto.getBankruptcyPrice() + "원이 되어 청산되었습니다.";
+        this.type = MessageType.BANKRUPTCY;
+        this.message = "종목 : " + dto.getTiker() + "\n청산가 : " + dto.getBankruptcyPrice() + "원이 되어 청산되었습니다.";
     }
 }

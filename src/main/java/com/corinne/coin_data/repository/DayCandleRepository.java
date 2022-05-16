@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public interface DayCandleRepository extends JpaRepository<DayCandle, Long> {
-    Page<DayCandle> findAllByTiker(String tiker, Pageable pageable);
+    List<DayCandle> findAllByTiker(String tiker);
     MinuteCandle findFirstByTiker(String tiker);
     Long countAllByTiker(String tiker);
 }
