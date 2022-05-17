@@ -35,4 +35,7 @@ public class PricePublishingDto implements Serializable {
         this.signedChangePrice = tradePrice.getSigned_change_price();
         this.signedChangeRate = tradePrice.getSigned_change_rate()*100;
     }
+    public PricePublishingDto(String tiker){
+        this.tiker=tiker;
+    }
 }

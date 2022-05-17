@@ -1,5 +1,6 @@
 package com.corinne.coin_data.websocket.repository;
 
+import com.corinne.coin_data.service.BankrupcyService;
 import com.corinne.coin_data.websocket.controller.RedisPublisher;
 import com.corinne.coin_data.websocket.controller.RedisSubscriber;
 import com.corinne.coin_data.websocket.dto.PricePublishingDto;
@@ -28,28 +29,27 @@ public class RedisRepository {
     // 구독 처리 서비스
     private final RedisSubscriber redisSubscriber;
     private final RedisPublisher redisPublisher;
+    private final BankrupcyService bankrupcyService;
     // Redis
     private final RedisTemplate<String, Object> redisTemplate;
-    private final CoinRepository coinRepository;
 
     // 채팅방의 대화 메시지를 발행하기 위한 redis topic 정보. 서버별로 채팅방에 매치되는 topic정보를 Map에 넣어 roomId로 찾을수 있도록 한다.
     private Map<String, ChannelTopic> topics;
     private ValueOperations<String, Object> tradePrice;
     private ListOperations<String, Object> prices;
     private HashOperations<String, String, Object> lastCandles;
-    private ListOperations<String,Object> bankruptcy;
 
     @Autowired
     ObjectMapper objectMapper;
 
     @Autowired
     public RedisRepository(RedisMessageListenerContainer redisMessageListener, RedisTemplate<String, Object> redisTemplate,
-                           RedisSubscriber redisSubscriber, CoinRepository coinRepository, RedisPublisher redisPublisher) {
+                           RedisSubscriber redisSubscriber, RedisPublisher redisPublisher, BankrupcyService bankrupcyService) {
         this.redisMessageListener = redisMessageListener;
         this.redisTemplate = redisTemplate;
         this.redisSubscriber = redisSubscriber;
-        this.coinRepository = coinRepository;
         this.redisPublisher = redisPublisher;
+        this.bankrupcyService = bankrupcyService;
     }
 
     @PostConstruct
@@ -58,7 +58,6 @@ public class RedisRepository {
         prices = redisTemplate.opsForList();
         lastCandles = redisTemplate.opsForHash();
         topics = new HashMap<>();
-        bankruptcy = redisTemplate.opsForList();
     }
 
     /**
@@ -72,21 +71,21 @@ public class RedisRepository {
     /**
      * 파산인 경우 보유 코인 삭제처리
      */
-    @Transactional
     public void isBankruptcy(String tiker){
-        BankruptcyDto checkDto = objectMapper.convertValue(bankruptcy.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
+        BankruptcyDto checkDto = objectMapper.convertValue(prices.leftPop(tiker + "bankruptcy"), BankruptcyDto.class);
         PricePublishingDto price = objectMapper.convertValue(tradePrice.get(tiker+"tradeprice"), PricePublishingDto.class);
         if(checkDto != null){
-            bankruptcy.leftPush(tiker + "bankruptcy", checkDto);
 
-            for (Long i = 0L; i <= bankruptcy.size(tiker + "bankruptcy"); i++) {
+            prices.leftPush(tiker + "bankruptcy", checkDto);
+
+            for (Long i = 0L; i <= prices.size(tiker + "bankruptcy"); i++) {
                 BankruptcyDto bankruptcyDto = objectMapper.convertValue(
-                        bankruptcy.index(tiker + "bankruptcy", i), BankruptcyDto.class);
+                        prices.index(tiker + "bankruptcy", i), BankruptcyDto.class);
 
                 if (price.getTradePrice() <= bankruptcyDto.getBankruptcyPrice()) {
-                    coinRepository.deleteByCoinId(bankruptcyDto.getCoinId());
-                    bankruptcy.remove(tiker + "bankruptcy", i, bankruptcyDto);
-
+                    bankrupcyService.bankrupcy(bankruptcyDto.getCoinId());
+                    prices.remove(tiker + "bankruptcy", i, bankruptcyDto);
+                    enterTopic(Long.toString(bankruptcyDto.getUserId()));
                     redisPublisher.publish(getTopic(Long.toString(bankruptcyDto.getUserId())), new ChatMessage(bankruptcyDto));
                 }
             }

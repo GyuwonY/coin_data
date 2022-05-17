@@ -51,7 +51,6 @@ public class MinuteScheduler {
             if (minuteCandleRepository.countAllByTiker(tiker).equals(1441L)) {
                 minuteCandleRepository.delete(minuteCandleRepository.findFirstByTiker(tiker));
             }
-
         }
     }
 
@@ -77,7 +76,7 @@ public class MinuteScheduler {
         }
     }
 
-    @Scheduled(cron = "0/1 * * * * ?")
+    @Scheduled(cron = "*/1 * * * * *")
     public void bankruptcyCheck() {
         for(String tiker : tikers) {
             redisRepository.isBankruptcy(tiker);

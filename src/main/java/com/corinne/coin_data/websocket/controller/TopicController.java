@@ -13,7 +13,7 @@ public class TopicController {
         this.redisRepository = redisRepository;
     }
 
-    // 알람을 위한 Topic 생성 후 sub할 Topic return
+    // 알람을 위한 Topic 생성
     @GetMapping("/chat/{userId}")
     public void insertTopic(@PathVariable String userId){
         redisRepository.enterTopic(userId);

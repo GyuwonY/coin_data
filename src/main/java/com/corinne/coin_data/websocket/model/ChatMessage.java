@@ -3,6 +3,8 @@ package com.corinne.coin_data.websocket.model;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -28,6 +30,8 @@ public class ChatMessage implements Serializable {
 
     public ChatMessage(BankruptcyDto dto){
         this.type = MessageType.BANKRUPTCY;
+        this.sendTime = LocalDateTime.now().plusHours(9).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.topicName = Long.toString(dto.getUserId());
         this.message = "종목 : " + dto.getTiker() + "\n청산가 : " + dto.getBankruptcyPrice() + "원이 되어 청산되었습니다.";
     }
 }

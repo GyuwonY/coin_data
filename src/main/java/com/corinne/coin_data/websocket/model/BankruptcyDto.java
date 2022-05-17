@@ -1,9 +1,6 @@
 package com.corinne.coin_data.websocket.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -11,6 +8,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class BankruptcyDto implements Serializable {
     private static final long serialVersionUID = 6494678977089006639L;
     private String tiker;
