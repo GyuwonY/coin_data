@@ -171,6 +171,7 @@ public class RedisRepository {
 
         if (topic == null) {
             topic = new ChannelTopic(topicName);
+
         }
 
         redisMessageListener.addMessageListener(redisSubscriber, topic);

@@ -24,7 +24,7 @@ public class Coin {
     private double buyPrice;
 
     @Column(nullable = false)
-    private int amount;
+    private Long amount;
 
     @Column(nullable = false)
     private int leverage;
