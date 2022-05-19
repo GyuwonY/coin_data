@@ -83,7 +83,7 @@ public class RedisRepository {
                         prices.index(tiker + "bankruptcy", i), BankruptcyDto.class);
 
                 if (price.getTradePrice() <= bankruptcyDto.getBankruptcyPrice()) {
-                    bankrupcyService.bankrupcy(bankruptcyDto.getCoinId());
+                    bankrupcyService.bankrupcy(bankruptcyDto.getCoinId(), bankruptcyDto.getUserId());
                     prices.remove(tiker + "bankruptcy", i, bankruptcyDto);
                     enterTopic(Long.toString(bankruptcyDto.getUserId()));
                     redisPublisher.publish(getTopic(Long.toString(bankruptcyDto.getUserId())), new ChatMessage(bankruptcyDto));

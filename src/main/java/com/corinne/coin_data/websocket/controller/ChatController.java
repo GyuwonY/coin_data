@@ -1,8 +1,10 @@
 package com.corinne.coin_data.websocket.controller;
 
+import com.corinne.coin_data.service.QuestService;
 import com.corinne.coin_data.websocket.jwt.HeaderTokenExtractor;
 import com.corinne.coin_data.websocket.jwt.JwtDecoder;
 import com.corinne.coin_data.websocket.model.ChatMessage;
+import com.corinne.coin_data.websocket.repository.QuestRepository;
 import com.corinne.coin_data.websocket.repository.RedisRepository;
 import com.corinne.coin_data.websocket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatController {
     private final RedisPublisher redisPublisher;
     private final RedisRepository redisRepository;
+    private final QuestService questService;
 
     /**
      * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
@@ -22,6 +25,8 @@ public class ChatController {
     public void message(ChatMessage message) {
         if(ChatMessage.MessageType.ENTER.equals(message.getType())){
             message.setMessage(message.getNickname() + "님이 입장하셨습니다.");
+        }else if(!message.isClear() && ChatMessage.MessageType.TALK.equals(message.getType())){
+            questService.checkQuest(message.getUserId());
         }
 
         // Websocket에 발행된 메시지를 redis로 발행한다(publish)

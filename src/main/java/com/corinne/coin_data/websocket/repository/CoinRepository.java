@@ -8,5 +8,5 @@ public interface CoinRepository extends JpaRepository<Coin, Long> {
 
     void deleteByTikerAndUser_UserId(String tiker, Long userId);
     @Transactional
-    void deleteByCoinId(Long coinId);
+    Coin deleteByCoinId(Long coinId);
 }
