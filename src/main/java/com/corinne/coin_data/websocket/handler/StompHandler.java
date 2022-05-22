@@ -1,10 +1,7 @@
 package com.corinne.coin_data.websocket.handler;
 
-
 import com.corinne.coin_data.websocket.jwt.HeaderTokenExtractor;
 import com.corinne.coin_data.websocket.jwt.JwtDecoder;
-import com.corinne.coin_data.websocket.model.User;
-import com.corinne.coin_data.websocket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -27,7 +24,6 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         if (StompCommand.CONNECT == accessor.getCommand()) {
             jwtDecoder.decodeId(headerTokenExtractor.extract(accessor.getFirstNativeHeader("token")));
-        }else if (StompCommand.DISCONNECT == accessor.getCommand()) {
         }
         return message;
     }
