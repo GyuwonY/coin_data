@@ -1,8 +1,10 @@
 package com.corinne.coin_data.websocket.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Entity
@@ -16,25 +18,25 @@ public class User {
     private Long userId;
 
     @Column
-    private String imageUrl;
+    private String imageUrl = "null";
 
     @Column(nullable = false, unique = true)
     private String userEmail;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String nickname;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
-    private Long accountBalance;
+    private Long accountBalance = 1000000L;
 
     @Column(nullable = false)
-    private int exp;
+    private int exp = 0;
 
     @Column(nullable = false)
-    private boolean firstLogin;
+    private boolean firstLogin = true;
 
     @Column(nullable = false)
     private double lastFluctuation;
@@ -50,6 +52,10 @@ public class User {
 
     @Column(nullable = false)
     private Long rival = 0L;
+
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Coin> coin;
 
     @Version
     private Integer version;
