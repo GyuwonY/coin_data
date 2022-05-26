@@ -7,7 +7,6 @@ import com.corinne.coin_data.repository.DayCandleRepository;
 import com.corinne.coin_data.repository.MinuteCandleRepository;
 import com.corinne.coin_data.websocket.dto.DayCandleDto;
 import com.corinne.coin_data.websocket.repository.RedisRepository;
-import com.corinne.coin_data.websocket.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -17,7 +16,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.yaml.snakeyaml.util.UriEncoder;
-
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -82,4 +80,5 @@ public class MinuteScheduler {
             redisRepository.isBankruptcy(tiker);
         }
     }
+
 }

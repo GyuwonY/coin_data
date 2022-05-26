@@ -33,7 +33,6 @@ public class CoinDataApplication {
     public ApplicationRunner applicationRunner() {
         return args -> {
             upbitWebsocket.start();
-            redisRepository.enterTopic("corinnechat");
         };
     }
 

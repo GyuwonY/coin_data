@@ -1,6 +1,5 @@
 package com.corinne.coin_data.collector;
 
-import com.corinne.coin_data.websocket.controller.RedisPublisher;
 import com.corinne.coin_data.websocket.dto.PricePublishingDto;
 import com.corinne.coin_data.websocket.dto.TradePrice;
 import com.corinne.coin_data.websocket.repository.RedisRepository;
@@ -16,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -29,9 +31,11 @@ public class UpbitWebSocketListener extends WebSocketListener {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private RedisPublisher redisPublisher;
+    private RedisTemplate redisTemplate;
     @Autowired
     private RedisRepository redisRepository;
+    @Autowired
+    private ChannelTopic channelTopic;
 
     @Override
     public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
@@ -67,9 +71,8 @@ public class UpbitWebSocketListener extends WebSocketListener {
             e.printStackTrace();
         }
         if(tradePrice.getStream_type().equals("SNAPSHOT")){
-            redisRepository.enterTopic(tradePrice.getCode());
         }else {
-            redisPublisher.publish(redisRepository.getTopic(tradePrice.getCode()), new PricePublishingDto(tradePrice));
+            redisTemplate.convertAndSend(channelTopic.getTopic(), new PricePublishingDto(tradePrice));
             redisRepository.savePrice(new PricePublishingDto(tradePrice));
         }
     }
